@@ -12,13 +12,24 @@ const UploadPage = () => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
 
-    Papa.parse(uploadedFile, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (result) => {
-        setPreviewData(result.data);
-      }
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      Papa.parse(reader.result, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          setPreviewData(result.data);
+        },
+      });
+    };
+
+    reader.onerror = () => {
+      setMessage("❌ Error al leer el archivo.");
+    };
+
+    if (uploadedFile) {
+      reader.readAsText(uploadedFile);
+    }
   };
 
   const handleSubmit = async () => {
